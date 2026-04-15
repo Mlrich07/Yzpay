@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yenzypay</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+
+<style>
+body{
+    margin:0;
+    font-family:'Nunito',sans-serif;
+    background:#f0f2f5;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+/* PHONE */
+.phone{
+    width:360px;
+    height:720px;
+    border-radius:40px;
+    overflow:hidden;
+    border:8px solid #222;
+    display:none;
+    background:white;
+}
+.phone.active{display:block;}
+
+.status{
+    padding:10px 20px;
+    display:flex;
+    justify-content:space-between;
+    font-weight:700;
+}
+
+/* HOME */
+.home{
+    background:linear-gradient(135deg,#4c36f5,#6c63ff);
+    color:white;
+}
+
+.title{
+    text-align:center;
+    font-weight:800;
+}
+
+.balance{
+    text-align:center;
+    font-size:28px;
+    font-weight:800;
+}
+
+.btn{
+    margin:10px auto;
+    display:block;
+    padding:10px;
+    border:none;
+    border-radius:20px;
+    background:white;
+    color:#4c36f5;
+    font-weight:700;
+    box-shadow:0 10px 20px rgba(0,0,0,0.15);
+}
+
+/* QR */
+.qr-box{
+    background:rgba(255,255,255,0.2);
+    backdrop-filter:blur(10px);
+    margin:15px;
+    padding:20px;
+    border-radius:20px;
+    text-align:center;
+}
+
+/* FEATURES */
+.features{
+    background:white;
+    border-radius:30px 30px 0 0;
+    padding:20px;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+    color:#333;
+}
+.feature{
+    text-align:center;
+    font-size:12px;
+    font-weight:700;
+    cursor:pointer;
+}
+.feature div{
+    width:50px;
+    height:50px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:auto;
+    box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* SCREENS */
+.screen{
+    padding:20px;
+}
+input{
+    width:90%;
+    padding:10px;
+    margin:10px;
+    border-radius:10px;
+    border:1px solid #ccc;
+}
+
+/* HISTORY */
+.txn{
+    padding:10px;
+    border-bottom:1px solid #eee;
+}
+</style>
+</head>
+
+<body>
+
+<!-- PIN -->
+<div class="phone active" id="pin">
+<div class="status"><span>YENZYPAY</span></div>
+
+<div class="screen" style="text-align:center;">
+<h3>Enter PIN</h3>
+<input type="password" id="pinInput" placeholder="PIN">
+<button class="btn" onclick="unlock()">Unlock</button>
+</div>
+</div>
+
+<!-- HOME -->
+<div class="phone home" id="home">
+<div class="status">
+<span>15:30</span>
+<span>4G</span>
+</div>
+
+<div class="title">YENZYPAY</div>
+
+<div class="balance" id="balance">41 FCFA</div>
+<button class="btn" onclick="toggleBalance()">👁️</button>
+
+<div class="qr-box">
+<p>My QR Code</p>
+</div>
+
+<div class="features">
+
+<div class="feature" onclick="showScreen('transfer')">
+<div style="background:#eef0ff;color:#4c36f5;">👤</div>
+Transfer
+</div>
+
+<div class="feature" onclick="showScreen('scanner')">
+<div style="background:#fff7e6;color:#ffa500;">🛒</div>
+Payment
+</div>
+
+<div class="feature">
+<div style="background:#ffeef2;color:#ff4d6d;">🏦</div>
+Bank
+</div>
+
+<div class="feature" onclick="showScreen('tontine')">
+<div style="background:#f3eeff;color:#9d4edd;">👥</div>
+Tontine
+</div>
+
+<div class="feature" onclick="showScreen('history')">
+<div style="background:#e6fff7;color:#00b894;">🎁</div>
+History
+</div>
+
+<div class="feature" onclick="showScreen('vault')">
+<div style="background:#fff0f0;color:#e74c3c;">🔐</div>
+Vault
+</div>
+
+</div>
+</div>
+
+<!-- TRANSFER -->
+<div class="phone" id="transfer">
+<div class="status"><span onclick="showScreen('home')">←</span><span>Transfer</span></div>
+
+<div class="screen">
+<input id="amount" placeholder="Amount">
+<button class="btn" onclick="sendMoney()">Send</button>
+</div>
+</div>
+
+<!-- SCANNER -->
+<div class="phone" id="scanner">
+<div class="status"><span onclick="showScreen('home')">←</span><span>Scanner</span></div>
+
+<div class="screen" style="text-align:center;">
+<p>Scan QR</p>
+<button class="btn" onclick="fakeScan()">Scan</button>
+</div>
+</div>
+
+<!-- TONTINE -->
+<div class="phone" id="tontine">
+<div class="status"><span onclick="showScreen('home')">←</span><span>Tontine</span></div>
+
+<div class="screen">
+<button class="btn" onclick="contribute()">Contribute</button>
+</div>
+</div>
+
+<!-- VAULT -->
+<div class="phone" id="vault">
+<div class="status"><span onclick="showScreen('home')">←</span><span>Vault</span></div>
+
+<div class="screen">
+<button class="btn" onclick="saveMoney()">Save</button>
+</div>
+</div>
+
+<!-- HISTORY -->
+<div class="phone" id="history">
+<div class="status"><span onclick="showScreen('home')">←</span><span>History</span></div>
+
+<div id="historyList"></div>
+</div>
+
+<script>
+
+/* STATE */
+let balance = 41;
+let visible = true;
+let PIN = "1234";
+let transactions = [];
+
+/* NAV */
+function showScreen(id){
+document.querySelectorAll('.phone').forEach(p=>p.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+}
+
+/* PIN */
+function unlock(){
+let input = document.getElementById('pinInput').value;
+if(input === PIN){
+showScreen('home');
+}else{
+alert("Wrong PIN");
+}
+}
+
+/* BALANCE */
+function toggleBalance(){
+visible = !visible;
+document.getElementById('balance').innerText =
+visible ? balance+" FCFA" : "••••";
+}
+
+function updateBalance(){
+document.getElementById('balance').innerText = balance+" FCFA";
+}
+
+/* HISTORY */
+function addTransaction(type, amount){
+transactions.unshift({
+type,
+amount,
+date:new Date().toLocaleString()
+});
+renderHistory();
+}
+
+function renderHistory(){
+let list = document.getElementById('historyList');
+list.innerHTML = "";
+
+transactions.forEach(t=>{
+list.innerHTML += `
+<div class="txn">
+<b>${t.type}</b> : ${t.amount} FCFA
+<br><small>${t.date}</small>
+</div>`;
+});
+}
+
+/* TRANSFER */
+function sendMoney(){
+let amount = parseInt(document.getElementById('amount').value);
+if(!amount) return;
+
+if(amount > balance){
+alert("Insufficient");
+return;
+}
+
+balance -= amount;
+updateBalance();
+addTransaction("Transfer",-amount);
+
+alert("Sent ✅");
+showScreen('home');
+}
+
+/* QR */
+function fakeScan(){
+let amount = Math.floor(Math.random()*5000);
+
+if(balance >= amount){
+balance -= amount;
+updateBalance();
+addTransaction("Payment",-amount);
+alert("Paid "+amount+" FCFA");
+}else{
+alert("Insufficient");
+}
+}
+
+/* TONTINE */
+function contribute(){
+let amount = 1000;
+balance -= amount;
+updateBalance();
+addTransaction("Tontine",-amount);
+alert("Contribution done");
+}
+
+/* VAULT */
+function saveMoney(){
+let amount = 500;
+balance -= amount;
+updateBalance();
+addTransaction("Vault",-amount);
+alert("Saved");
+}
+
+</script>
+
+</body>
+</html>
